@@ -330,19 +330,19 @@
     /* start the experiment */
     jsPsych.init({
         timeline: _.flattenDeep(timeline),
-        preload_images: preloadimagesRC,
-        max_load_time: 1000 * 500,
+        preload_images: preloadimagesRC, // preloading noisy faces
+        max_load_time: 1000 * 500, // maximum loading time
         exclusions: {
-            min_width: 800,
-            min_height: 600,
+            min_width: 800,  // minimal screen width
+            min_height: 600, // minimal screen height
         },
         on_finish: function (data) {
             $("#jspsych-content").html("<img src='https://i.gifer.com/4V0b.gif'>");
 
             /* Initialize Firebase */
             var config = {
-                apiKey: "AIzaSyBwDr8n-RNCbBOk1lKIxw7AFgslXGcnQzM", // replace this by your own firebase information
-                databaseURL: "https://postdocgent.firebaseio.com/" // replace this by your own firebase information
+                apiKey: "xxx",     // for data collection, replace this by your own firebase information <!!!>
+                databaseURL: "xxx" // for data collection, replace this by your own firebase information <!!!>
             };
 
             firebase.initializeApp(config);
@@ -361,7 +361,7 @@
                 return x.task == "RC1" || x.task == "RC2"
             }).csv();
 
-            /* Send data to Firebase and redirect to Qualtrics */
+            /* Send data to Firebase */
             database
                 .ref(FBdirectory + "/" + id + "/")
                 .update({ data })
