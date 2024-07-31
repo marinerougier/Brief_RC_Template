@@ -1,0 +1,190 @@
+body {
+    cursor: none;
+}
+h1 {
+     color: #616e7b;
+     margin-bottom: 35px;
+     font-size: 20px;
+     font-weight: normal;
+}
+ .jspsych-display-element {
+     display: flex;
+     flex-direction: column;
+     margin: auto;
+     overflow-y: auto;
+     background: #ECEFF1;
+     font-family: Roboto, Helvetica, Arial, sans-serif;
+     font-size: 16px;
+     line-height: 1.6em;
+     color: #708090;
+}
+/* Form elements like input fields and buttons */
+ .jspsych-display-element input[type="text"] {
+     font-family: Roboto, Helvetica, Arial, sans-serif;
+     font-size: 14px;
+}
+ .jspsych-display-element:focus {
+     outline: none;
+}
+ .jspsych-content-wrapper {
+     display: flex;
+     margin: auto;
+     background: white;
+     width: 800px;
+     height: 600px;
+     border: 1px solid;
+     border-color: #ccc;
+}
+ .jspsych-content {
+     max-width: 90%; /* this is mainly an IE 10-11 fix */
+     text-align: center;
+     margin: auto;  /* this is for overflowing content */
+}
+ .jspsych-top {
+     align-items: flex-start;
+}
+ .jspsych-middle {
+     align-items: center;
+}
+ .jspsych-btn {
+     display: inline-block;
+     padding: 6px 12px;
+     margin-top: 25px;
+     margin-left: 0;
+     margin-bottom: 0;
+     margin-right: 0;
+     font-size: 14px;
+     font-weight: 400;
+     cursor: pointer;
+     line-height: 1.4;
+     text-align: center;
+     white-space: nowrap;
+     vertical-align: middle;
+     background-image: none;
+     border: 1px solid transparent;
+     border-radius: 4px;
+     background-color: #fff;
+     border-color: #ccc;
+     color: #708090;
+}
+ .jspsych-btn:hover {
+     background-color: #ddd;
+     color: #708090;
+}
+ .jspsych-btn:disabled {
+     background-color: #eee;
+     border-color: #ccc;
+     cursor: not-allowed;
+}
+.justify {
+    text-align: justify;
+}
+.emphasize {
+    font-weight: bold;
+}
+.italic {
+    font-style: italic;
+}
+#start {
+    background-color: #f44336;
+    color: white !important;
+    padding: 12px 22px;
+    text-align: center;
+}
+#start:hover {
+    background-color: rgb(179, 0, 0);
+}
+#blue {
+    color: #2756a3;
+    font-weight: bold;
+}
+#green {
+    color: #247a2b;
+    font-weight: bold;
+}
+#min2lines {
+    color: #a6a6a6;
+    font-size: 15px;
+}
+#continue {
+    margin-top: 35px;
+}
+#blueSta {
+    background-color: #2756a3;
+    padding: 15px 20px;
+    color: white;
+    max-width: 450px;
+}
+#greenSta {
+    background-color: #247a2b;
+    padding: 15px 20px;
+    color: white;
+    max-width: 450px;
+}
+ #jspsych-progressbar-container {
+     color: #555;
+     border-bottom: 1px solid #dedede;
+     background-color: #f9f9f9;
+     margin-bottom: 1em;
+     text-align: center;
+     padding: 8px 0;
+     width: 100%;
+     line-height: 1em;
+}
+ #jspsych-progressbar-container span {
+     font-size: 14px;
+     padding-right: 14px;
+}
+ #jspsych-progressbar-outer {
+     background-color: #eee;
+     width: 50%;
+     margin: auto;
+     height: 14px;
+     display: inline-block;
+     vertical-align: middle;
+     box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+}
+ #jspsych-progressbar-inner {
+     background-color: #aaa;
+     width: 0;
+     height: 100%;
+}
+ #jspsych-data-display {
+     text-align: left;
+}
+
+/* Keyboard style */
+kbd, .key {
+	display: inline;
+	display: inline-block;
+	min-width: 1em;
+	padding: .2em .3em;
+	font: normal .85em/1 "Lucida Grande", Lucida, Arial, sans-serif;
+	text-align: center;
+	text-decoration: none;
+	-moz-border-radius: .3em;
+	-webkit-border-radius: .3em;
+	border-radius: .3em;
+	border: none;
+	cursor: default;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+}
+kbd[title], .key[title] {
+	cursor: help;
+}
+kbd.light, .light-keys kbd, .key.light, .light-keys .key {
+	background: rgb(250, 250, 250);
+	background: -moz-linear-gradient(top, rgb(210, 210, 210), rgb(255, 255, 255));
+	background: -webkit-gradient(linear, left top, left bottom, from(rgb(210, 210, 210)), to(rgb(255, 255, 255)));
+	color:  rgb(50, 50, 50);
+	text-shadow: 0 0 2px rgb(255, 255, 255);
+	-moz-box-shadow: inset 0 0 1px rgb(255, 255, 255), inset 0 0 .4em rgb(200, 200, 200), 0 .1em 0 rgb(130, 130, 130), 0 .11em 0 rgba(0, 0, 0, .4), 0 .1em .11em rgba(0, 0, 0, .9);
+	-webkit-box-shadow: inset 0 0 1px rgb(255, 255, 255), inset 0 0 .4em rgb(200, 200, 200), 0 .1em 0 rgb(130, 130, 130), 0 .11em 0 rgba(0, 0, 0, .4), 0 .1em .11em rgba(0, 0, 0, .9);
+	box-shadow: inset 0 0 1px rgb(255, 255, 255), inset 0 0 .4em rgb(200, 200, 200), 0 .1em 0 rgb(130, 130, 130), 0 .11em 0 rgba(0, 0, 0, .4), 0 .1em .11em rgba(0, 0, 0, .9);
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}

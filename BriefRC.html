@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>exp</title>
+    <script src="jspsych-6.0.3/jspsych.js"></script>
+    <script src="jspsych-6.0.3/plugins/jspsych-fullscreen.js"></script>
+    <script src="jspsych-6.0.3/plugins/jspsych-html-keyboard-response.js"></script>
+    <script src="jspsych-6.0.3/plugins/jspsych-html-button-response.js"></script>
+    <script src="jspsych-6.0.3/plugins/jspsych-survey-text.js"></script>
+    <script src="jspsych-6.0.3/plugins/jspsych-survey-likert.js"></script>
+    <script src="jspsych-6.0.3/plugins/jspsych-survey-multi-choice.js"></script>
+    <script src="js/jspsych-html-mouse-response.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/lodash.min.js"></script>
+    <script src="js/firebase.js"></script>
+    <link href="jspsych-6.0.3/css/jspsych.css" rel="stylesheet" type="text/css">
+    <style>
+        body {
+            cursor: default;
+        }
+
+        .rcimg-12 {
+            cursor: pointer;
+        }
+
+        .rcimg-12 {
+            margin: 10px;
+        }
+
+        .rcimg-12:hover {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        }
+
+        .jspsych-content-wrapper {
+            width: 900px;
+            height: 700px;
+        }
+    </style>
+</head>
+
+<body></body>
+
+<script>
+
+    /* Parameters */
+    // ID
+    var id = jsPsych.data.getURLVariable("id");
+    id = id == null ? id : jsPsych.randomization.randomID(15); // assign random id if not provided in URL
+
+    var numOfPairs = 150 * 6;          // Total number of pair images images (inv & ori)
+    var FBdirectory = 'Brief_RC_Data'; // Name of the repository in the Firebase directory (where data is sent)
+
+    /* Functions */
+    // Link of Ori and Inv pictures stored in the Github corresponding repository
+    var imgLink = function (imgNum, oriInv) {
+        if (oriInv == "inv") {
+            return 'https://marinerougier.github.io/Brief_RC_Template/CIs_Inv/faceInv' + imgNum + '.png?raw=1'
+        } else {
+            return 'https://marinerougier.github.io/Brief_RC_Template/CIs_Ori/faceOri' + imgNum + '.png?raw=1'
+        };
+    };
+
+    /* Initial variables */
+    var timeline = [];
+    var preloadimagesRC = [];
+
+    /* Generate RC trials */
+    var imgsRC = $.map($(Array(numOfPairs)), function (val, i) { return i + 1; }); // generate numerical sequence
+    imgsRC.map(function (e) {
+        preloadimagesRC.push(imgLink(e, 'ori'));
+        preloadimagesRC.push(imgLink(e, 'inv'));
+    });
+
+    var genFacesPerSlide = function (numOfFacesPerTrial, imgs) {
+        numOfFacesPerTrial = numOfFacesPerTrial / 2;
+
+        var chunkedArray = [];
+
+        var i, j, trialImgs, chunk = numOfFacesPerTrial;
+        for (i = 0, j = imgs.length; i < j; i += chunk) {
+
+            trialImgs = imgs.slice(i, i + chunk);
+
+            var tempOri = [];
+            var tempInv = [];
+
+            trialImgs.map(function (e) {
+                tempOri.push(imgLink(e, 'ori'));
+                tempInv.push(imgLink(e, 'inv'));
+            });
+
+            trialImgs = _.flattenDeep([tempOri, tempInv]);
+            // trialImgs = _.shuffle(trialImgs); // randomize order of the faces in the slide
+
+            chunkedArray.push({
+                trialImgs
+            });
+        }
+        return chunkedArray;
+    };
+
+    var RCstim = genFacesPerSlide(12, imgsRC); // Number of faces per trial (6 ori + 6 anti = 12 per trial)
+
+    // EXPERIMENT -----------------------------------------------------------------------------------------------------------------
+     /* Consent */
+  var check_consent = function(elem) {
+    if (document.getElementById('info').checked 
+      & document.getElementById('volunt').checked 
+      & document.getElementById('anony').checked 
+      & document.getElementById('end').checked 
+      & document.getElementById('consqc').checked 
+      & document.getElementById('summ').checked 
+      & document.getElementById('participate').checked ) {
+      return true;
+    }
+    else {
+      alert("If you wish to participate, you must check all the boxes.");
+      return false;
+    }
+    return false;
+  };
+
+    // script stored in the Github repository
+      var Consent = {
+        type:'external-html',
+        url: "https://marinerougier.github.io/Brief_RC_Template/external_page_consent.html",
+        cont_btn: "start",
+        check_fn: check_consent,
+            on_load: function() {
+              window.scrollTo(0, 0)
+            },
+      };
+
+    /* Fullscreen mode */
+    var activateFullscreen = {
+        type: 'fullscreen',
+        fullscreen_mode: true,
+        delay_after: 500,
+        message: "",
+        button_label: "Please click here to start the Recognition task",
+    };
+
+
+    /* RC instructions */
+    var RCinst1 = {
+        type: "html-keyboard-response",
+        post_trial_gap: 300,
+        choices: [32],
+        stimulus: function () {
+            var html = "";
+            html += "<h1>Recognition task</h1>";
+            html += "<p class = 'justify'> In this task, we will present a series of faces similar to the one presented. ";
+            html += "At each trial, <b>we will present you 12 faces.</b> ";
+            html += "These faces are blurred and, as a result, they look rather similar to each other. However, <b>the faces are all (slightly) different.</b></p>";
+            html += "<img width='200' style='padding: 0px' src='" + imgLink(474, 'ori') + "'>";
+            html += "<p></br>Press <span class='light-keys'><kbd>space</kbd></span> to continue</p>";
+            return html;
+        },
+    };
+
+    var RCinst2 = {
+        type: "html-keyboard-response",
+        post_trial_gap: 300,
+        choices: [32],
+        stimulus: function () {
+            var html = "";
+            html += "<h1>Recognition task</h1>";
+            html += "<p class = 'justify'>At each trial, your task is to choose among the 12 faces ";
+            html += "the one that you think is <b>the most similar to the [target category].</b></p>";
+            html += "<p class = 'justify'>Use your mouse to select a face at each trial.</p>";
+            html += "<img width='200' style='padding: 0px' src='" + imgLink(474, 'ori') + "'>";
+            html += "<p></br>Press <span class='light-keys'><kbd>space</kbd></span> to continue</p>";
+            return html;
+        },
+    };
+
+
+    var RCinst3 = {
+        type: "html-keyboard-response",
+        post_trial_gap: 300,
+        choices: [32],
+        stimulus: function () {
+            var html = "";
+            html += "<h1>Recognition task</h1>";
+            html += "<p class = 'justify'>Before you start, please note that: </br></br>";
+            html += "<b>There are no good or bad answers!</b> ";
+            html += "You just have to make a choice as <b>intuitively</b> as possible. ";
+            html += "On average, for each trial, participants take about <b>3 seconds</b> ";
+            html += "to select a face. Please <b>try to maintain a similar pace</b>.</br></br>";
+            html += "In this part of the task, you will have to peform a total of 150 trials.</p>";
+            html += "<p></br>Press <span class='light-keys'><kbd>space</kbd></span> to start the task</p>";
+            return html;
+        },
+    };
+
+    var RCinst4 = {
+        type: "html-keyboard-response",
+        post_trial_gap: 300,
+        choices: [32],
+        stimulus: function () {
+            var html = "";
+            html += "<p class = 'justify'>The recognition task is finished.</br>";
+            html += "In the following, you will provide demographic information.</p>";
+            html += "<p></br>Press <span class='light-keys'><kbd>space</kbd></span> to start</p>";
+            return html;
+        },
+    };
+
+    /* RC */
+    var i = 1;
+    var RC1 = {
+        timeline_variables: RCstim,
+        randomize_order: true,
+        //sample: {
+        //    type: 'custom',
+        //    fn: function (t) { return [1, 2, 3] }
+        //},
+        data: {
+            task: 'RC1',
+            RCtarget: 'prisoners'
+        },
+        timeline: [{
+            type: 'html-mouse-response',
+            stimulus: function () {
+                html = "";
+                html += "<p>Select the face that you think is the most similar to ";
+                html += "[target category] </br></br>";
+                jsPsych.timelineVariable('trialImgs', true).map(function (e) {
+                    html += "<img class='rcimg-12' src='" + e + "'>";
+                });
+                html += "</br> Trial: " + i + "/150</br>";
+                i += 1;
+                return html;
+            },
+        }]
+    };
+
+    /* Demographic information */
+    var genderOptions = ['Man', 'Woman', 'Other'];
+    var gender = {
+        type: 'survey-multi-choice',
+        questions: [{ prompt: "Please indicate your gender:", options: genderOptions, required: true }],
+        button_label: "continue",
+        on_finish: function (data) {
+            jsPsych.data.addProperties({
+                gender: JSON.parse(data.responses).Q0,
+            });
+            console.log(data);
+        },
+    };
+
+    var age = {
+        timeline: [{
+            type: 'survey-text',
+            questions: [{ prompt: "Please indicate your age:", rows: 1, columns: 10 }],
+            button_label: "continue",
+        }],
+        loop_function: function (data) {
+            var res = data.values()[0].responses;
+            var res = JSON.parse(res).Q0;
+            if (res == "") {
+                alert("Please answer the question");
+                return true;
+            }
+        },
+        on_finish: function (data) {
+            jsPsych.data.addProperties({
+                age: JSON.parse(data.responses).Q0,
+            });
+        },
+    };
+
+    var languageOptions = ['Native speaker', 'Very well', 'Well', 'Average', 'Badly', 'Very badly'];
+    var language = {
+        type: 'survey-multi-choice',
+        questions: [{ prompt: "How well do you speak english?", options: languageOptions, required: true }],
+        button_label: "continue",
+        on_finish: function (data) {
+            jsPsych.data.addProperties({
+                language: JSON.parse(data.responses).Q0,
+            });
+            console.log(data);
+        },
+    };
+   
+    var Comments = {
+        timeline: [{
+            type: 'survey-text',
+            questions: [{ prompt: 'Do you have any comments regarding the present study? [Optional]', rows: 3, columns: 60 }],
+            button_label: "continue",
+        }],
+        on_finish: function (data) {
+            jsPsych.data.addProperties({
+                comment: JSON.parse(data.responses).Q0,
+            });
+        },
+    };
+
+    var exitFullscreen = {
+        type: 'fullscreen',
+        fullscreen_mode: false,
+        delay_after: 400,
+    };
+
+
+    var debriefing = '' +
+        '<span style="color:#cc3300; font-weight: bold">Debriefing and study validation</span></br></br>' +
+        '<p class = "justify">' +
+        'Thank you for your participation! The goal of this study was...' +
+        '</p>'
+
+
+    /*  ~~~~~~~~~~~~~~~~ TIMELINES  ~~~~~~~~~~~~~~~~ */
+    timeline.push(activateFullscreen);
+    timeline.push(Consent);
+    timeline.push(RCinst1);
+    timeline.push(RCinst2);
+    timeline.push(RCinst3);
+    timeline.push(RC1);
+    timeline.push(RCinst4);
+    timeline.push(gender);
+    timeline.push(age);
+    timeline.push(language);
+    timeline.push(Comments);
+    timeline.push(exitFullscreen);
+
+    /* start the experiment */
+    jsPsych.init({
+        timeline: _.flattenDeep(timeline),
+        preload_images: preloadimagesRC,
+        max_load_time: 1000 * 500,
+        exclusions: {
+            min_width: 800,
+            min_height: 600,
+        },
+        on_finish: function (data) {
+            $("#jspsych-content").html("<img src='https://i.gifer.com/4V0b.gif'>");
+
+            /* Initialize Firebase */
+            var config = {
+                apiKey: "AIzaSyBwDr8n-RNCbBOk1lKIxw7AFgslXGcnQzM", // replace this by your own firebase information
+                databaseURL: "https://postdocgent.firebaseio.com/" // replace this by your own firebase information
+            };
+
+            firebase.initializeApp(config);
+            var database = firebase.database();
+
+            // if no id provided, generate a new id
+            if (id == null) { id = jsPsych.randomization.randomID(15) };
+
+            /* jsPsych: add data to every trial */
+            jsPsych.data.addProperties({
+                id: id
+            });
+
+            // In case there are two blocks in the RC task
+            var data = jsPsych.data.get().filterCustom(function (x) {
+                return x.task == "RC1" || x.task == "RC2"
+            }).csv();
+
+            /* Send data to Firebase and redirect to Qualtrics */
+            database
+                .ref(FBdirectory + "/" + id + "/")
+                .update({ data })
+                .then(function () {
+                    console.log("Data sent!");
+                    $("#jspsych-content").html(debriefing);
+                    // jsPsych.data.displayData()
+                });
+        }
+    });
+</script>
+
+</html>
