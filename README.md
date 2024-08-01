@@ -21,3 +21,14 @@
   // CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
   // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   //
+  // Instructions before running a study ---------------------------------------------------
+  //
+  // To collect data, you can (a) download the files from this Github, (b) create a Firebase account 
+  // (where data is sent), (b) replace the 'xxx' on lines 344 and 345 of the ‘BriefRC.html’ file 
+  // with your own firebase info, (c) place the files on your own Github and replace the Github url 
+  // in the ‘BriefRC.html’ file to direct to your own repository. 
+  //
+  // Citation of this work -----------------------------------------------------------------
+  //
+  // To cite the Brief-RC task in your publication, please use: 
+  // Schmitz, M.*, Rougier, M.*, & Yzerbyt, V. (2024). Introducing the Brief Reverse Correlation: An improved tool to assess visual representations. *Co-first authors. European Journal of Social Psychology. 
